@@ -4,7 +4,7 @@
 
 ## Usage
 
-OCR example
+OCR example, please ref to `BaiduCloudSignerTests` for full code.
 
 ```swift
 let signer = BaiduCloudSigner(ak: "", sk: "")
