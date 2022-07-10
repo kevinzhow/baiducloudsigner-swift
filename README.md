@@ -2,9 +2,19 @@
 
 对应 [V1](https://cloud.baidu.com/doc/Reference/s/njwvz1yfu#%E7%9B%B8%E5%85%B3%E5%87%BD%E6%95%B0%E8%AF%B4%E6%98%8E) 签名方式
 
+## Installation
+
+### Swift Package Manager
+
+dependencies: [
+    .package(url: "https://github.com/kevinzhow/baiducloudsigner-swift.git", .upToNextMajor(from: "1.0.0"))
+]
+
 ## Usage
 
 OCR example, please ref to `BaiduCloudSignerTests` for full code.
+
+### Sign Request
 
 ```swift
 let signer = BaiduCloudSigner(ak: "", sk: "")
@@ -21,4 +31,21 @@ let signedRequest = signer.sign(request: request)
 let session = URLSession.shared
 
 let (data, _) = try await session.data(for: signedRequest)
+```
+
+### Get Signed Authorization Header
+
+This is the underlying implements of `Sign Request`
+
+```swift
+let method = "POST"
+
+let url = URL(string: "https://aip.baidubce.com/rest/2.0/ocr/v1/general_basic")!
+
+var headers = ["Content-Type": "application/x-www-form-urlencoded"]
+
+let signer = BaiduCloudSigner(ak: "", sk: "")
+
+let authHeader = signer.sign(method: method, url: url, headers: headers)
+headers["Authorization"] = authHeader
 ```

@@ -3,21 +3,40 @@ import CryptoKit
 
 public struct BaiduCloudSigner {
     
+    /// Access Key ID
     let ak: String
+    /// Secret Access Key
     let sk: String
 
+    /// Init `BaiduCloudSigner`
+    ///
+    /// - Parameters:
+    ///   - ak: Access Key ID
+    ///   - sk: Secret Access Key
     public init(ak: String, sk: String) {
         self.ak = ak
         self.sk = sk
     }
     
+    /// Returns Signed Request
     public func sign(request: URLRequest, validateSeconds: Int = 1800) -> URLRequest {
+        let authHeader = sign(method: request.httpMethod!, url: request.url!, headers: request.allHTTPHeaderFields ?? [:], validateSeconds: validateSeconds)
         
-        let canonicalURI = request.url!.path.uriEncodeExceptSlash()!
+        var request = request
+        
+        request.setValue(authHeader, forHTTPHeaderField: "Authorization")
+        
+        return request
+    }
+    
+    /// Returns Signed Authorization Header Value
+    public func sign(method: String, url: URL, headers: [String : String], validateSeconds: Int = 1800) -> String {
+        
+        let canonicalURI = url.path.uriEncodeExceptSlash()!
         
         var canonicalQueryString: String {
             
-            let urLComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)
+            let urLComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
             
             if let queryItems = urLComponents?.queryItems {
                 let items = queryItems.sorted { q1, q2 in
@@ -42,9 +61,9 @@ public struct BaiduCloudSigner {
             }
         }
         
-        let hostHeader = request.url!.host!.uriEncode()!
+        let hostHeader = url.host!.uriEncode()!
         
-        var allHeaders = request.allHTTPHeaderFields ?? [:]
+        var allHeaders = headers
         
         allHeaders["host"] = hostHeader
         
@@ -61,9 +80,10 @@ public struct BaiduCloudSigner {
             return itemStrings.joined(separator: "\n")
         }
         
-        let canonicalRequest = "\(request.httpMethod!)\n\(canonicalURI)\n\(canonicalQueryString)\n\(canonicalHeaders)"
+        let canonicalRequest = "\(method)\n\(canonicalURI)\n\(canonicalQueryString)\n\(canonicalHeaders)"
         
         let utcISODateFormatter = ISO8601DateFormatter()
+        
         let dateString = utcISODateFormatter.string(from: Date())
         
         let authStringPrefix = "bce-auth-v1/\(ak)/\(dateString)/\(validateSeconds)"
@@ -74,11 +94,7 @@ public struct BaiduCloudSigner {
         
         let authHeader = "bce-auth-v1/\(ak)/\(dateString)/\(validateSeconds)/\(signedHeaders)/\(signatureHex)"
         
-        var request = request
-        
-        request.setValue(authHeader, forHTTPHeaderField: "Authorization")
-        
-        return request
+        return authHeader
     }
 }
 
