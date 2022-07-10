@@ -6,9 +6,11 @@
 
 ### Swift Package Manager
 
+```swift
 dependencies: [
     .package(url: "https://github.com/kevinzhow/baiducloudsigner-swift.git", .upToNextMajor(from: "0.0.1"))
 ]
+```
 
 ## Usage
 
