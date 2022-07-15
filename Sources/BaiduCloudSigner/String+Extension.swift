@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import CryptoKit
+import Crypto
 
 extension String {
     public func stringByAddingPercentEncodingForFormData(plusForSpace: Bool=false) -> String? {
