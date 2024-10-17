@@ -44,6 +44,9 @@ final class BaiduCloudSignerTests: XCTestCase {
         let signer = BaiduCloudSigner(ak: ak, sk: sk)
         
         let authHeader = signer.sign(method: method, url: url, headers: headers)
+        
+        print(authHeader)
+        
         headers["Authorization"] = authHeader
         
         var request = URLRequest(url: url)
